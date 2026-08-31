@@ -1,0 +1,502 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Навчальний центр</title>
+</head>
+<body>
+<div id="root"></div>
+<script id="state" type="application/json">{"v":0,"results":{},"settings":{}}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lora:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap">
+<script>
+function appMain(){
+  "use strict";
+
+  var CSS = `
+  :root{--bg:#FBF9F5;--surface:#FFFFFF;--surface-2:#F4F0E8;--ink:#23282E;--ink-soft:#55606B;--ink-faint:#8A93A0;--line:#E7E1D6;
+    --accent:#2F7E6E;--accent-soft:#E4F0EC;--ok:#2F7E6E;--ok-bg:#E1F0EB;--bad:#C0503C;--bad-bg:#F6E6E1;
+    --math:#3E5C99;--math-bg:#E9EEF7;--eng:#B0566A;--eng-bg:#F6E7EA;--geo:#2F7E6E;--geo-bg:#E1F0EB;--hist:#B07A34;--hist-bg:#F5ECDC;
+    --radius:14px;--shadow:0 1px 2px rgba(30,25,15,.05),0 6px 20px rgba(30,25,15,.05);}
+  @media (prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#14171C;--surface:#1C2027;--surface-2:#232833;--ink:#ECEDEF;--ink-soft:#AEB6C0;--ink-faint:#7C8794;--line:#2E3540;
+    --accent:#5FB8A5;--accent-soft:#1E3833;--ok:#5FB8A5;--ok-bg:#17332E;--bad:#E08066;--bad-bg:#3A2620;
+    --math:#8AA6E0;--math-bg:#22293A;--eng:#E093A4;--eng-bg:#35242A;--geo:#5FB8A5;--geo-bg:#17332E;--hist:#D9A863;--hist-bg:#322913;
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 20px rgba(0,0,0,.35);}}
+  :root[data-theme=dark]{--bg:#14171C;--surface:#1C2027;--surface-2:#232833;--ink:#ECEDEF;--ink-soft:#AEB6C0;--ink-faint:#7C8794;--line:#2E3540;
+    --accent:#5FB8A5;--accent-soft:#1E3833;--ok:#5FB8A5;--ok-bg:#17332E;--bad:#E08066;--bad-bg:#3A2620;
+    --math:#8AA6E0;--math-bg:#22293A;--eng:#E093A4;--eng-bg:#35242A;--geo:#5FB8A5;--geo-bg:#17332E;--hist:#D9A863;--hist-bg:#322913;
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 20px rgba(0,0,0,.35);}
+  *{box-sizing:border-box;}
+  body{background:var(--bg);color:var(--ink);margin:0;line-height:1.6;font-family:Manrope,system-ui,-apple-system,sans-serif;-webkit-font-smoothing:antialiased;}
+  h1,h2,h3,h4{font-family:Lora,Georgia,serif;line-height:1.2;}
+  .wrap{max-width:820px;margin:0 auto;padding:0 18px 96px;}
+  /* role picker */
+  .rp{max-width:460px;margin:0 auto;padding:60px 20px;text-align:center;}
+  .rp .logo{width:56px;height:56px;border-radius:15px;background:var(--accent);color:#fff;display:grid;place-items:center;font-family:Lora,serif;font-weight:700;font-size:28px;margin:0 auto 18px;}
+  .rp h1{font-size:28px;margin:0 0 6px;font-weight:600;}
+  .rp p{color:var(--ink-soft);font-size:15px;margin:0 0 26px;}
+  .rp .roles{display:grid;gap:14px;}
+  .rolebtn{display:flex;align-items:center;gap:15px;text-align:left;background:var(--surface);border:1.5px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px 20px;cursor:pointer;font-family:inherit;color:inherit;}
+  .rolebtn:hover{border-color:var(--accent);}
+  .rolebtn .em{font-size:30px;} .rolebtn h3{margin:0 0 3px;font-size:18px;font-weight:600;} .rolebtn p{margin:0;font-size:13px;color:var(--ink-faint);}
+  .pinbox{max-width:340px;margin:0 auto;} .pinbox input{font-size:26px;letter-spacing:8px;text-align:center;width:100%;padding:12px;border-radius:12px;border:2px solid var(--line);background:var(--bg);color:var(--ink);font-family:inherit;}
+  .pinbox input:focus{outline:none;border-color:var(--accent);}
+  .pinerr{color:var(--bad);font-size:13px;margin-top:8px;min-height:18px;}
+  .link{background:none;border:0;color:var(--ink-faint);font-size:13px;text-decoration:underline;cursor:pointer;font-family:inherit;padding:6px;}
+  /* top */
+  .top{border-bottom:1px solid var(--line);background:var(--surface);}
+  .top-in{max-width:820px;margin:0 auto;padding:14px 18px 0;}
+  .brand{display:flex;align-items:center;gap:10px;}
+  .brand .logo{width:32px;height:32px;border-radius:9px;background:var(--accent);color:#fff;display:grid;place-items:center;font-family:Lora,serif;font-weight:700;font-size:17px;}
+  .brand h1{font-size:18px;margin:0;font-weight:600;}
+  .rolechip{margin-left:auto;display:flex;align-items:center;gap:8px;font-size:12px;}
+  .rolechip .r{font-weight:700;padding:4px 10px;border-radius:20px;background:var(--accent-soft);color:var(--accent);}
+  .synced{font-size:11px;color:var(--ink-faint);}
+  .tabs{display:flex;gap:4px;margin-top:12px;overflow-x:auto;}
+  .tab{flex:0 0 auto;border:0;background:none;font-family:inherit;font-size:14px;font-weight:600;color:var(--ink-soft);padding:10px 14px;cursor:pointer;border-bottom:2.5px solid transparent;white-space:nowrap;}
+  .tab.sel{color:var(--accent);border-bottom-color:var(--accent);}
+  h2.vt{font-size:24px;font-weight:600;margin:22px 0 4px;} .vsub{color:var(--ink-soft);font-size:15px;margin:0 0 20px;}
+  /* days */
+  .days{display:grid;gap:12px;}
+  .day{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px 18px;display:flex;align-items:center;gap:14px;cursor:pointer;text-align:left;font-family:inherit;color:inherit;width:100%;}
+  .day:hover{border-color:var(--accent);}
+  .day .dn{flex:0 0 auto;width:42px;height:42px;border-radius:11px;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;font-family:Lora,serif;font-weight:700;font-size:18px;}
+  .day .dt{flex:1;} .day .dt h3{margin:0 0 3px;font-size:16px;font-weight:600;} .day .dt p{margin:0;font-size:13px;color:var(--ink-faint);}
+  .day .badge{flex:0 0 auto;font-size:12px;font-weight:700;padding:5px 11px;border-radius:20px;background:var(--surface-2);color:var(--ink-faint);}
+  .day .badge.done{background:var(--ok-bg);color:var(--ok);}
+  /* runner */
+  .run-top{display:flex;align-items:center;gap:12px;margin:20px 0 18px;}
+  .run-top .x{border:0;background:var(--surface-2);color:var(--ink-soft);width:36px;height:36px;border-radius:10px;font-size:18px;cursor:pointer;font-family:inherit;}
+  .run-top .meta{flex:1;} .run-top .meta .t{font-weight:600;font-size:15px;} .run-top .meta .p{font-size:12.5px;color:var(--ink-faint);}
+  .run-top .timer{font-variant-numeric:tabular-nums;font-weight:700;font-size:15px;color:var(--accent);background:var(--accent-soft);padding:5px 11px;border-radius:20px;}
+  .pbar{height:6px;border-radius:4px;background:var(--surface-2);overflow:hidden;margin-bottom:24px;}
+  .pbar .f{height:100%;background:var(--accent);transition:width .3s;}
+  .qcard{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:24px 22px;}
+  .qchip{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:4px 10px;border-radius:6px;margin-bottom:14px;}
+  .c-m{background:var(--math-bg);color:var(--math);} .c-e{background:var(--eng-bg);color:var(--eng);} .c-g{background:var(--geo-bg);color:var(--geo);} .c-h{background:var(--hist-bg);color:var(--hist);}
+  .qtext{font-family:Lora,serif;font-size:24px;font-weight:600;margin:0 0 6px;}
+  .qhint{font-size:13px;color:var(--ink-faint);margin:0 0 18px;}
+  .ansrow{display:flex;gap:10px;flex-wrap:wrap;}
+  .ansrow.col{flex-direction:column;align-items:stretch;}
+  .ansrow input,.ansrow textarea{flex:1;min-width:160px;font-size:20px;padding:13px 15px;border-radius:12px;border:2px solid var(--line);background:var(--bg);color:var(--ink);font-family:inherit;}
+  .ansrow textarea{font-size:17px;line-height:1.5;resize:vertical;min-height:80px;}
+  .ansrow input:focus,.ansrow textarea:focus{outline:none;border-color:var(--accent);}
+  .bigbtn{font-family:inherit;font-size:16px;font-weight:700;cursor:pointer;border:0;border-radius:12px;padding:13px 24px;background:var(--accent);color:#fff;}
+  .bigbtn:disabled{opacity:.4;cursor:default;}
+  .skip{margin-top:14px;background:none;border:0;color:var(--ink-faint);font-size:13px;text-decoration:underline;cursor:pointer;font-family:inherit;display:block;}
+  /* report */
+  .rep-hero{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:22px;text-align:center;margin-bottom:18px;}
+  .rep-hero .big{font-family:Lora,serif;font-size:46px;font-weight:700;color:var(--accent);line-height:1;}
+  .rep-hero .lbl{font-size:14px;color:var(--ink-soft);margin-top:4px;}
+  .rep-stats{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:16px;}
+  .rep-stats .st{background:var(--surface-2);border-radius:10px;padding:8px 14px;font-size:13px;}
+  .rep-stats .st b{display:block;font-size:16px;font-family:Lora,serif;color:var(--ink);}
+  .subj-tot{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:20px;}
+  .subj-tot .s{border:1px solid var(--line);border-radius:11px;padding:12px 14px;border-top:3px solid var(--tc);background:var(--surface);}
+  .subj-tot .s h4{margin:0 0 4px;font-size:14px;color:var(--tc);} .subj-tot .s p{margin:0;font-size:12.5px;color:var(--ink-soft);}
+  .t-m{--tc:var(--math);} .t-e{--tc:var(--eng);} .t-g{--tc:var(--geo);} .t-h{--tc:var(--hist);}
+  .qrow{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:13px 15px;margin:9px 0;box-shadow:var(--shadow);}
+  .qrow .top2{display:flex;align-items:center;gap:8px;margin-bottom:4px;flex-wrap:wrap;}
+  .mk{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font-size:14px;font-weight:800;color:#fff;flex:0 0 auto;}
+  .mk.ok{background:var(--ok);} .mk.bad{background:var(--bad);}
+  .qrow .qn{font-weight:600;font-size:14.5px;flex:1;min-width:0;}
+  .qrow .tag2{font-size:11px;font-weight:700;padding:2px 8px;border-radius:6px;}
+  .qrow .meta2{display:flex;gap:8px;flex-wrap:wrap;font-size:12.5px;color:var(--ink-soft);margin-top:4px;}
+  .qrow .pill{background:var(--surface-2);border-radius:20px;padding:3px 9px;display:inline-flex;gap:4px;align-items:center;}
+  .qrow .ans-line{font-size:13.5px;margin-top:5px;} .qrow .yn{color:var(--ink-faint);} .qrow .given{font-weight:600;} .qrow .given.wrong{color:var(--bad);} .qrow .given.right{color:var(--ok);} .qrow .correct-ans{color:var(--ok);font-weight:600;}
+  .badge-in{background:var(--accent-soft);color:var(--accent);} .badge-paste{background:var(--bad-bg);color:var(--bad);}
+  .badge-edit{background:var(--surface-2);color:var(--ink-soft);} .badge-warn{background:var(--bad-bg);color:var(--bad);font-weight:700;}
+  .mk.open{background:var(--eng);font-size:12px;}
+  .openans{margin-top:6px;padding:10px 13px;background:var(--surface-2);border-radius:9px;font-size:14px;color:var(--ink);white-space:pre-wrap;border-left:3px solid var(--eng);}
+  .flags-legend{font-size:12px;color:var(--ink-faint);margin:10px 0 0;line-height:1.7;}
+  /* journal */
+  .jsum{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px 20px;margin-bottom:18px;display:flex;gap:18px;flex-wrap:wrap;}
+  .jsum .b{flex:1;min-width:110px;} .jsum .b .n{font-family:Lora,serif;font-size:26px;font-weight:700;color:var(--accent);} .jsum .b .l{font-size:12.5px;color:var(--ink-soft);}
+  .jitem{background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);margin:10px 0;overflow:hidden;}
+  .jhead{display:flex;align-items:center;gap:12px;padding:14px 16px;cursor:pointer;} .jhead .jn{flex:1;} .jhead .jn h4{margin:0 0 2px;font-size:15px;font-weight:600;} .jhead .jn p{margin:0;font-size:12.5px;color:var(--ink-faint);}
+  .jhead .sc{font-family:Lora,serif;font-weight:700;font-size:17px;color:var(--accent);} .jhead .arr{color:var(--ink-faint);font-size:13px;}
+  .jbody{display:none;padding:4px 16px 16px;border-top:1px solid var(--line);} .jitem.open .jbody{display:block;}
+  .empty{text-align:center;color:var(--ink-faint);padding:40px 20px;font-size:14.5px;}
+  .toolbar{display:flex;gap:10px;align-items:center;margin-top:16px;flex-wrap:wrap;}
+  .reset{font-size:13px;color:var(--ink-faint);background:none;border:0;cursor:pointer;text-decoration:underline;padding:4px;font-family:inherit;}
+  .note{font-size:12.5px;color:var(--ink-faint);}
+  .banner{background:var(--accent-soft);border:1px solid color-mix(in srgb,var(--accent) 22%,transparent);border-radius:12px;padding:12px 15px;font-size:13.5px;color:var(--ink);margin-bottom:16px;}
+  .banner.warn{background:var(--bad-bg);border-color:color-mix(in srgb,var(--bad) 25%,transparent);}
+  /* program */
+  .mod{margin-top:26px;} .mod-head{display:flex;align-items:baseline;gap:9px;margin-bottom:6px;}
+  .mnum{font-family:Lora,serif;font-weight:700;color:#fff;background:var(--accent);width:26px;height:26px;border-radius:7px;display:grid;place-items:center;font-size:13px;}
+  .mod-head h3{font-size:19px;margin:0;font-weight:600;} .mod-head .wk{margin-left:auto;font-size:12px;font-weight:700;color:var(--ink-faint);}
+  .scroll{overflow-x:auto;border-radius:12px;border:1px solid var(--line);}
+  table.prog{border-collapse:collapse;width:100%;min-width:680px;background:var(--surface);}
+  table.prog th,table.prog td{text-align:left;padding:9px 11px;font-size:12.5px;vertical-align:top;border-bottom:1px solid var(--line);}
+  table.prog thead th{background:var(--surface-2);font-weight:700;font-size:11px;}
+  table.prog thead th.cm{color:var(--math);} table.prog thead th.ce2{color:var(--eng);} table.prog thead th.cg2{color:var(--geo);} table.prog thead th.ch2{color:var(--hist);}
+  table.prog tbody th{font-family:Lora,serif;width:44px;color:var(--ink);}
+  /* plan */
+  .pcard{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;margin:12px 0;}
+  .pcard .ph{display:flex;align-items:baseline;gap:8px;padding:13px 16px;background:var(--pb);border-bottom:1px solid var(--line);}
+  .pcard .ph h4{margin:0;color:var(--pc);font-size:16px;} .pcard .ph .tm{margin-left:auto;font-size:12px;font-weight:700;color:var(--pc);background:var(--surface);padding:2px 9px;border-radius:20px;}
+  .pcard .pb2{padding:6px 16px 14px;} .pstep{display:flex;gap:10px;padding:8px 0;border-bottom:1px dashed var(--line);font-size:14px;color:var(--ink-soft);} .pstep:last-child{border-bottom:0;}
+  .pstep .tt{flex:0 0 auto;font-size:11px;font-weight:700;color:var(--pc);background:var(--pb);padding:2px 7px;border-radius:6px;height:fit-content;margin-top:2px;min-width:54px;text-align:center;}
+  .p-m{--pc:var(--math);--pb:var(--math-bg);} .p-e{--pc:var(--eng);--pb:var(--eng-bg);} .p-g{--pc:var(--geo);--pb:var(--geo-bg);} .p-h{--pc:var(--hist);--pb:var(--hist-bg);}
+  footer{margin-top:40px;padding-top:16px;border-top:1px solid var(--line);font-size:12.5px;color:var(--ink-faint);}
+  `;
+  (function(){var s=document.getElementById("appcss");if(!s){s=document.createElement("style");s.id="appcss";document.head.appendChild(s);}s.textContent=CSS;})();
+
+  var SUB={m:["Математика","c-m","t-m"],e:["Англійська","c-e","t-e"],g:["Географія","c-g","t-g"],h:["Історія","c-h","t-h"]};
+  var STUDENTS=[{id:"yura",name:"Юра",em:"👦🏻"},{id:"svitlana",name:"Світлана",em:"👧🏻"}];
+  function studName(id){var f=STUDENTS.filter(function(s){return s.id===id;})[0];return f?f.name:"Учень";}
+  function resultsOf(id){if(!state.results[id])state.results[id]={};return state.results[id];}
+  var DAYS=[
+    {id:"d1",title:"День 1 — Множення та сім’я",theme:"Множення, перші слова, карта, первісні люди",qs:[
+      {s:"m",t:"num",q:"6 × 7 = ?",a:42},{s:"m",t:"num",q:"8 × 9 = ?",a:72},
+      {s:"e",t:"txt",q:"«мама» англійською?",a:["mother"]},{s:"e",t:"txt",q:"«брат» англійською?",a:["brother"]},
+      {s:"g",t:"txt",q:"Яка сторона світу завжди зверху на карті?",a:["північ","пн"]},{s:"g",t:"txt",q:"Флора — це рослини чи тварини?",a:["рослини","рослина"]},
+      {s:"h",t:"txt",q:"З чого первісні люди робили знаряддя?",a:["камінь","каменю","з каменю","каміння"],hint:"одне слово"},{s:"h",t:"txt",q:"Що давало первісним людям тепло й захист?",a:["вогонь"]}]},
+    {id:"d2",title:"День 2 — Множення та їжа",theme:"Множення, їжа, столиці, Єгипет",qs:[
+      {s:"m",t:"num",q:"7 × 8 = ?",a:56},{s:"m",t:"num",q:"9 × 6 = ?",a:54},
+      {s:"e",t:"txt",q:"«вода» англійською?",a:["water"]},{s:"e",t:"txt",q:"«хліб» англійською?",a:["bread"]},
+      {s:"g",t:"txt",q:"Столиця України?",a:["київ"]},{s:"g",t:"txt",q:"Найбільша гаряча пустеля світу?",a:["сахара"]},
+      {s:"h",t:"txt",q:"Уздовж якої річки виник Стародавній Єгипет?",a:["ніл","нілу","річки ніл"]},{s:"h",t:"txt",q:"Як називали правителя Єгипту?",a:["фараон"]}]},
+    {id:"d3",title:"День 3 — Ділення та дім",theme:"Ділення, дім, Європа, піраміди",qs:[
+      {s:"m",t:"num",q:"42 ÷ 6 = ?",a:7},{s:"m",t:"num",q:"56 ÷ 8 = ?",a:7},
+      {s:"e",t:"txt",q:"«будинок» англійською?",a:["house"]},{s:"e",t:"txt",q:"«вікно» англійською?",a:["window"]},
+      {s:"g",t:"txt",q:"Столиця Франції?",a:["париж"]},{s:"g",t:"txt",q:"Столиця Німеччини?",a:["берлін"]},
+      {s:"h",t:"txt",q:"Як називають величезні гробниці фараонів?",a:["піраміди","піраміда"]},{s:"h",t:"txt",q:"Якими значками писали єгиптяни?",a:["ієрогліфи","ієрогліфами","ієрогліф"]}]},
+    {id:"d4",title:"День 4 — Порядок дій та погода",theme:"Порядок дій, погода, Європа, Греція",qs:[
+      {s:"m",t:"num",q:"2 + 3 × 4 = ?",a:14,hint:"спочатку множення"},{s:"m",t:"num",q:"(6 + 4) ÷ 2 = ?",a:5,hint:"спочатку дужки"},
+      {s:"e",t:"txt",q:"«сонце» англійською?",a:["sun"]},{s:"e",t:"txt",q:"«дощ» англійською?",a:["rain"]},
+      {s:"g",t:"txt",q:"Столиця Італії?",a:["рим"]},{s:"g",t:"txt",q:"Столиця Іспанії?",a:["мадрид"]},
+      {s:"h",t:"txt",q:"У якому місті народилася демократія?",a:["афіни","афінах","в афінах"]},{s:"h",t:"txt",q:"Як називали грецьких мудреців?",a:["філософи","філософ","філософами"]}]},
+    {id:"d5",title:"День 5 — Дроби та множина",theme:"Дроби, множина, Азія, Рим",qs:[
+      {s:"m",t:"txt",q:"Торт поділили на 8, з’їли 4. Яка це частина? (дробом, напр. 1/3)",a:["1/2","½","4/8","2/4"]},{s:"m",t:"num",q:"20 − 12 ÷ 4 = ?",a:17},
+      {s:"e",t:"txt",q:"Множина від «box»?",a:["boxes"]},{s:"e",t:"txt",q:"Множина від «child»?",a:["children"]},
+      {s:"g",t:"txt",q:"Столиця Китаю?",a:["пекін"]},{s:"g",t:"txt",q:"Столиця Японії?",a:["токіо"]},
+      {s:"h",t:"txt",q:"Як називали римських воїнів?",a:["легіонери","легіонер","легіонерами"]},{s:"h",t:"txt",q:"Яка мова була в Стародавньому Римі?",a:["латина","латинська","латиною","латинь"]}]},
+    {id:"d6",title:"День 6 — Повторення",theme:"Мішанина, this/that, Африка, Середньовіччя",qs:[
+      {s:"m",t:"num",q:"9 × 7 = ?",a:63},{s:"m",t:"num",q:"64 ÷ 8 = ?",a:8},
+      {s:"e",t:"txt",q:"«___ is my dog» (поряд, один предмет): яке слово?",a:["this"]},{s:"e",t:"txt",q:"«ці» (багато, близько) англійською?",a:["these"]},
+      {s:"g",t:"txt",q:"Столиця Єгипту?",a:["каїр"]},{s:"g",t:"txt",q:"У якій природній зоні живуть леви й жирафи?",a:["савана","саванна","в савані"]},
+      {s:"h",t:"txt",q:"Що будували в Середньовіччі для захисту?",a:["замки","замок"]},{s:"h",t:"txt",q:"Хто служив сеньйору як воїн-вершник в обладунках?",a:["лицар","лицарі"]}]}
+  ];
+  // Open-ended writing tasks (child writes text herself; parents/Claude review — not auto-graded)
+  var OPEN={
+    d1:[{s:"e",t:"open",q:"Напиши англійською 2 речення про свою сімʼю (використай is / are).",hint:"напр.: My mother is kind."},
+        {s:"h",t:"open",q:"Своїми словами: як первісні люди добували їжу і чому був важливий вогонь? (1–2 речення)"}],
+    d2:[{s:"e",t:"open",q:"Напиши англійською 2 речення про те, що ти любиш їсти (I like ...).",hint:"напр.: I like apples."},
+        {s:"h",t:"open",q:"Своїми словами: чому річка Ніл була важлива для Єгипту?"}],
+    d3:[{s:"e",t:"open",q:"Опиши свою кімнату англійською (2 речення: My room is... / There is...).",hint:"напр.: My room is small."},
+        {s:"h",t:"open",q:"Своїми словами: навіщо в Єгипті будували піраміди?"}],
+    d4:[{s:"e",t:"open",q:"Напиши англійською 2 речення про погоду сьогодні (It is ...).",hint:"напр.: It is cold today."},
+        {s:"h",t:"open",q:"Своїми словами: що таке демократія і в якому місті вона зародилась?"}],
+    d5:[{s:"e",t:"open",q:"Напиши 2 речення про те, що ти робиш щодня (I go..., I play...).",hint:"напр.: I go to school."},
+        {s:"h",t:"open",q:"Своїми словами: чим уславився Стародавній Рим? (1–2 речення)"}],
+    d6:[{s:"e",t:"open",q:"Напиши 2–3 речення про себе англійською (імʼя, вік, що любиш).",hint:"напр.: My name is... I am..."},
+        {s:"h",t:"open",q:"Своїми словами: хто такі лицарі й навіщо будували замки?"}]
+  };
+  DAYS.forEach(function(d){var o=OPEN[d.id];if(o)d.qs=d.qs.concat(o);});
+  var MODULES=[
+    {n:1,title:"Фундамент",wk:[1,4],rows:[[1,"Множення ×2–×5","Алфавіт; Family","Що таке географія; карта","Стрічка часу"],[2,"Множення ×6–×12","to be; Food","Материки й океани","Первісні люди"],[3,"Ділення","this/that; Home","Сторони світу","Кам’яний вік"],[4,"Порядок дій","Weather","Флора/фауна; зони","Перші землероби"]]},
+    {n:2,title:"Дроби та Стародавній Схід",wk:[5,8],rows:[[5,"Дроби: поняття","Present Simple","Європа: огляд","Єгипет: Ніл"],[6,"Скорочення дробів","3-тя особа; School","Україна + сусіди","Єгипет: піраміди"],[7,"Додавання дробів","Числа, час","Зах. Європа","Месопотамія"],[8,"Різні знаменники","Body/Clothes","Пд. Європа","Індія та Китай"]]},
+    {n:3,title:"Десяткові та Греція",wk:[9,12],rows:[[9,"Множ./діл. дробів","Питання (do/does)","Азія: огляд","Греція: поліси"],[10,"Десяткові: розряди","can/can’t","Сх. Азія","Демократія"],[11,"Десяткові: дод./відн.","Прийменники","Пд. Азія","Філософи, Олімпіада"],[12,"Дріб ↔ десятковий","Daily routine","Зони Азії","Александр"]]},
+    {n:4,title:"Відсотки та Рим",wk:[13,16],rows:[[13,"Множ./діл. десяткових","Present Continuous","Африка: савана","Рим: республіка"],[14,"Відсотки","Simple vs Continuous","Африка + столиці","Імперія"],[15,"Задачі на відсотки","City/Transport","Пн. Америка","Колізей"],[16,"Повторення","Jobs","Пд. Америка","Падіння Риму"]]},
+    {n:5,title:"Цілі числа та Середньовіччя",wk:[17,20],rows:[[17,"Від’ємні числа","Past Simple","Австралія","Раннє Середньовіччя"],[18,"Дод./відн. цілих","Past: +ed","Антарктида","Лицарі, замки"],[19,"Множ./діл. цілих","Нерегулярні","Кліматичні пояси","Хрестові походи"],[20,"Повторення","Про минуле","Зони світу","Міста й ремесла"]]},
+    {n:6,title:"Рівняння та Відродження",wk:[21,24],rows:[[21,"Пропорції","going to / will","Україна","Пізнє Середньовіччя"],[22,"Рівняння з x","Порівняння","Україна: столиця","Відродження"],[23,"Периметр і площа","Читання","Масштаб","Великі відкриття"],[24,"Повторення","Абзац про себе","Карта світу","Хронологія"]]}
+  ];
+
+  var LS_STATE="nav-state-v3",LS_DEV="nav-dev-v3";
+  function readEmbedded(){try{return JSON.parse(document.getElementById("state").textContent)||{};}catch(e){return {};}}
+  function normState(s){s=s||{};s.results=s.results||{};s.settings=s.settings||{};s.v=s.v||0;return s;}
+  // Merge two states: union of results per student per day, keeping the record with the latest completedAt.
+  function mergeStates(a,b){a=normState(a);b=normState(b);var out={results:{},settings:Object.assign({},a.settings,b.settings),v:Math.max(a.v,b.v)};
+    [a,b].forEach(function(st){Object.keys(st.results).forEach(function(sid){out.results[sid]=out.results[sid]||{};var days=st.results[sid]||{};Object.keys(days).forEach(function(did){var rec=days[did];var ex=out.results[sid][did];if(!ex||(rec&&(rec.completedAt||0)>(ex.completedAt||0)))out.results[sid][did]=rec;});});});
+    return out;}
+  function loadLocal(){try{return JSON.parse(localStorage.getItem(LS_STATE));}catch(e){return null;}}
+  var EMB=normState(readEmbedded());
+  var state=mergeStates(EMB,loadLocal());
+  function saveLocal(){try{localStorage.setItem(LS_STATE,JSON.stringify(state));}catch(e){}}
+  // Is there data on this device not yet in the published (embedded) version?
+  function hasNewData(cur,base){var f=false;Object.keys(cur.results).forEach(function(sid){var days=cur.results[sid]||{};Object.keys(days).forEach(function(did){var c=days[did],b=(base.results[sid]||{})[did];if(!b||((c&&c.completedAt||0)>(b.completedAt||0)))f=true;});});return f;}
+  var dev={};try{dev=JSON.parse(localStorage.getItem(LS_DEV))||{};}catch(e){}
+  function saveDev(){try{localStorage.setItem(LS_DEV,JSON.stringify(dev));}catch(e){}}
+
+  function norm(x){return String(x).toLowerCase().trim().replace(/['’.!]/g,"").replace(/\s+/g," ").replace(/ё/g,"е");}
+  function isCorrect(qq,val){if(val==null||val==="")return false;if(qq.t==="num"){var n=parseFloat(String(val).replace(",","."));return !isNaN(n)&&n===qq.a;}var v=norm(val);return qq.a.some(function(a){return norm(a)===v;});}
+  function fmtTime(ms){var s=Math.round(ms/1000);if(s<60)return s+" с";return Math.floor(s/60)+" хв "+(s%60)+" с";}
+  function fmtShort(ms){var s=Math.round(ms/1000);if(s<60)return s+"с";return Math.floor(s/60)+"хв "+(s%60)+"с";}
+  function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];});}
+
+  // ---- Sync layer: REST backend (Netlify Function + Blobs) ----
+  var API_URL="/api/state";
+  var syncMode=null; // "shared" | "local"
+  function apiGet(){return fetch(API_URL,{cache:"no-store"}).then(function(r){if(!r.ok)throw new Error("http");return r.json();});}
+  function apiPost(st){return fetch(API_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(st)}).then(function(r){if(!r.ok)throw new Error("http");return r.json();});}
+  function persist(after,cb){
+    state.v=Date.now();saveLocal();
+    apiPost(state).then(function(server){state=mergeStates(server,state);saveLocal();syncMode="shared";if(cb)cb({ok:true});})
+      .catch(function(){syncMode="local";if(cb)cb({local:true});});
+  }
+  function loadRemote(rerender){
+    apiGet().then(function(server){
+      var before=JSON.stringify(state.results);
+      state=mergeStates(server,state);saveLocal();syncMode="shared";
+      if(hasNewData(state,normState(server))){apiPost(state).then(function(m){state=mergeStates(m,state);saveLocal();}).catch(function(){});}
+      if(rerender&&!run&&dev.role&&JSON.stringify(state.results)!==before)renderHome();
+    }).catch(function(){syncMode="local";});
+  }
+  var root=document.getElementById("root")||(function(){var d=document.createElement("div");d.id="root";document.body.appendChild(d);return d;})();
+  var tab=null; // current tab
+  var parentStudent=null; // selected student in parent results
+  var run=null,timerInt=null;
+
+  /* ---------------- ROLE ---------------- */
+  function renderRoot(){
+    if(!dev.role){renderPicker();return;}
+    renderHome();
+  }
+  function renderPicker(){
+    var studBtns=STUDENTS.map(function(s){return '<button class="rolebtn" data-stud="'+s.id+'"><span class="em">'+s.em+'</span><div><h3>'+s.name+'</h3><p>Проходити денні уроки</p></div></button>';}).join("");
+    root.innerHTML='<div class="rp"><div class="logo">Н</div><h1>Навчальний центр</h1>'+
+      '<p>Хто заходить?</p><div class="roles">'+studBtns+
+      '<button class="rolebtn" id="asParent"><span class="em">👨‍👩‍👧</span><div><h3>Батьки</h3><p>Дивитися результати й час</p></div></button>'+
+      '</div></div>';
+    root.querySelectorAll("[data-stud]").forEach(function(b){b.onclick=function(){dev.role="student";dev.student=b.dataset.stud;saveDev();tab="lessons";renderHome();};});
+    document.getElementById("asParent").onclick=function(){parentEntry();};
+  }
+  function parentEntry(){
+    var pin=state.settings.parentPin;
+    if(!pin){
+      // create pin
+      root.innerHTML='<div class="rp"><div class="logo">👨‍👩‍👧</div><h1>Батьківський вхід</h1>'+
+        '<p>Придумайте PIN-код (4 цифри), щоб дитина не бачила цей розділ. Його треба буде вводити на новому пристрої.</p>'+
+        '<div class="pinbox"><input id="pin" type="tel" inputmode="numeric" maxlength="4" placeholder="••••" autocomplete="off"><div class="pinerr" id="pe"></div>'+
+        '<button class="bigbtn" id="setpin" style="width:100%;margin-top:8px">Створити PIN і увійти</button></div>'+
+        '<button class="link" id="back">← Назад</button></div>';
+      document.getElementById("back").onclick=renderPicker;
+      var inp=document.getElementById("pin");inp.focus();
+      document.getElementById("setpin").onclick=function(){
+        var v=inp.value.trim();
+        if(!/^\d{4}$/.test(v)){document.getElementById("pe").textContent="Потрібно рівно 4 цифри.";return;}
+        state.settings.parentPin=v;dev.role="parent";dev.unlocked=true;saveDev();tab="results";
+        persist(null,function(){renderHome();}); // if shared, reload; dev already set
+        renderHome();
+      };
+      return;
+    }
+    if(dev.unlocked){dev.role="parent";saveDev();tab="results";renderHome();return;}
+    // ask pin
+    root.innerHTML='<div class="rp"><div class="logo">🔒</div><h1>Батьківський вхід</h1><p>Введіть PIN-код.</p>'+
+      '<div class="pinbox"><input id="pin" type="tel" inputmode="numeric" maxlength="4" placeholder="••••" autocomplete="off"><div class="pinerr" id="pe"></div>'+
+      '<button class="bigbtn" id="ok" style="width:100%;margin-top:8px">Увійти</button></div><button class="link" id="back">← Назад</button></div>';
+    document.getElementById("back").onclick=renderPicker;
+    var inp=document.getElementById("pin");inp.focus();
+    function tryPin(){var v=inp.value.trim();if(v===state.settings.parentPin){dev.role="parent";dev.unlocked=true;saveDev();tab="results";renderHome();}else{document.getElementById("pe").textContent="Невірний PIN.";inp.value="";}}
+    document.getElementById("ok").onclick=tryPin;
+    inp.addEventListener("keydown",function(e){if(e.key==="Enter")tryPin();});
+  }
+
+  /* ---------------- HOME ---------------- */
+  function tabsFor(){return dev.role==="parent"?[["results","📊 Результати"],["program","🗺️ Програма"],["plan","📅 План"]]:[["lessons","📚 Уроки"],["program","🗺️ Програма"],["plan","📅 План"]];}
+  function renderHome(){
+    if(run){return;} // runner active
+    var list=tabsFor();
+    if(!tab||!list.some(function(t){return t[0]===tab;}))tab=list[0][0];
+    var roleLabel=dev.role==="parent"?"Батьки":studName(dev.student);
+    var sync=syncMode==="local"?'<span class="synced">офлайн</span>':(syncMode==="shared"?'<span class="synced">☁ синхронізовано</span>':"");
+    var html='<div class="top"><div class="top-in"><div class="brand"><span class="logo">Н</span><h1>Навчальний центр</h1>'+
+      '<div class="rolechip">'+sync+'<span class="r">'+roleLabel+'</span><button class="link" id="switch" style="padding:2px 4px">змінити</button></div></div>'+
+      '<div class="tabs">'+list.map(function(t){return '<button class="tab'+(t[0]===tab?" sel":"")+'" data-t="'+t[0]+'">'+t[1]+'</button>';}).join("")+'</div></div></div>'+
+      '<div class="wrap" id="content"></div>';
+    root.innerHTML=html;
+    document.getElementById("switch").onclick=function(){dev.role=null;saveDev();renderPicker();};
+    root.querySelectorAll(".tab").forEach(function(b){b.onclick=function(){tab=b.dataset.t;renderHome();};});
+    var c=document.getElementById("content");
+    if(tab==="lessons")renderDays(c);
+    else if(tab==="results")renderResults(c);
+    else if(tab==="program")renderProgram(c);
+    else renderPlan(c);
+  }
+
+  /* ---------------- DAYS / RUNNER ---------------- */
+  function renderDays(c){
+    var h='<h2 class="vt">Денні уроки</h2><p class="vsub">Обери урок і виконай завдання. Відповіді вводь з клавіатури. Наприкінці буде звіт.</p><div class="days"></div>';
+    c.innerHTML=h;var box=c.querySelector(".days");var resS=resultsOf(dev.student);
+    DAYS.forEach(function(d,i){var r=resS[d.id];
+      var btn=document.createElement("button");btn.className="day";
+      var badge=r?'<span class="badge done">'+r.correct+'/'+r.total+' ✓</span>':'<span class="badge">Почати</span>';
+      btn.innerHTML='<span class="dn">'+(i+1)+'</span><span class="dt"><h3>'+d.title+'</h3><p>'+d.theme+' · '+d.qs.length+' питань</p></span>'+badge;
+      btn.onclick=function(){startDay(d);};box.appendChild(btn);
+    });
+  }
+  function startDay(d){run={day:d,idx:0,records:[],startAt:Date.now()};timerInt=setInterval(updTimer,1000);renderQ();}
+  function exitRunner(){if(timerInt){clearInterval(timerInt);timerInt=null;}run=null;renderHome();}
+  function updTimer(){var t=root.querySelector(".timer");if(t&&run)t.textContent=fmtShort(Date.now()-run.startAt);}
+  function renderQ(){
+    var d=run.day,i=run.idx,qq=d.qs[i],sub=SUB[qq.s],open=qq.t==="open";
+    var field=open
+      ? '<textarea id="ans" rows="3" autocomplete="off" placeholder="Напиши свою відповідь..."></textarea>'
+      : '<input id="ans" type="text" '+(qq.t==="num"?'inputmode="numeric"':'')+' autocomplete="off" autocapitalize="off" placeholder="Твоя відповідь">';
+    root.innerHTML='<div class="wrap">'+
+      '<div class="run-top"><button class="x" id="rx">✕</button><div class="meta"><div class="t">'+d.title+'</div><div class="p">Питання '+(i+1)+' з '+d.qs.length+(open?' · письмове завдання':'')+'</div></div><div class="timer">'+fmtShort(Date.now()-run.startAt)+'</div></div>'+
+      '<div class="pbar"><div class="f" style="width:'+(i/d.qs.length*100)+'%"></div></div>'+
+      '<div class="qcard"><span class="qchip '+sub[1]+'">'+sub[0]+(open?' · пиши сам(а)':'')+'</span><p class="qtext">'+qq.q+'</p>'+(qq.hint?'<p class="qhint">Підказка: '+qq.hint+'</p>':'')+
+      '<div class="ansrow'+(open?' col':'')+'">'+field+'<button class="bigbtn" id="submit" disabled>'+(open?'Готово':'Відповісти')+'</button></div>'+
+      '<button class="skip" id="skip">Не знаю — пропустити</button></div></div>';
+    var inp=document.getElementById("ans"),btn=document.getElementById("submit");
+    var pasted=false,pasteCount=0,edits=0,keystrokes=0,qStart=(window.performance&&performance.now)?performance.now():Date.now();
+    inp.addEventListener("paste",function(){pasted=true;pasteCount++;});
+    inp.addEventListener("drop",function(){pasted=true;pasteCount++;});
+    inp.addEventListener("input",function(e){
+      var it=e.inputType||"";
+      if(it==="insertFromPaste"||it==="insertFromDrop")pasted=true;
+      else if(it.indexOf("delete")===0)edits++;
+      else if(it.indexOf("insert")===0)keystrokes++;
+      btn.disabled=inp.value.trim()==="";
+    });
+    if(!open)inp.addEventListener("keydown",function(e){if(e.key==="Enter"&&!btn.disabled)commit();});
+    btn.onclick=function(){commit();};
+    document.getElementById("skip").onclick=function(){commit(true);};
+    document.getElementById("rx").onclick=function(){if(confirm("Вийти з уроку? Прогрес цього уроку не збережеться."))exitRunner();};
+    setTimeout(function(){inp.focus();},50);
+    function commit(skip){
+      var val=skip?"":inp.value.trim();
+      var now=(window.performance&&performance.now)?performance.now():Date.now();
+      run.records.push({s:qq.s,q:qq.q,given:val,open:open,
+        correct:(open?null:isCorrect(qq,val)),
+        answer:open?"":(qq.t==="num"?String(qq.a):qq.a[0]),
+        ms:now-qStart,pasted:pasted&&!skip,pasteCount:skip?0:pasteCount,edits:skip?0:edits,keystrokes:skip?0:keystrokes,chars:val.length,skipped:!!skip});
+      run.idx++;if(run.idx>=d.qs.length)finishDay();else renderQ();
+    }
+  }
+  function finishDay(){
+    if(timerInt){clearInterval(timerInt);timerInt=null;}
+    var d=run.day,recs=run.records;
+    var graded=recs.filter(function(r){return !r.open;});
+    var correct=graded.filter(function(r){return r.correct;}).length;
+    var openCount=recs.length-graded.length;
+    var perSub={};["m","e","g","h"].forEach(function(k){perSub[k]={c:0,n:0,ms:0,open:0};});var totalMs=0;
+    recs.forEach(function(r){var p=perSub[r.s];if(r.open)p.open++;else{p.n++;if(r.correct)p.c++;}p.ms+=r.ms;totalMs+=r.ms;});
+    resultsOf(dev.student)[d.id]={completedAt:Date.now(),total:graded.length,correct:correct,openCount:openCount,totalMs:totalMs,perSub:perSub,records:recs};
+    var did=d.id,stud=dev.student;run=null;
+    persist({role:"student",student:stud,view:"report",dayId:did},function(res){
+      // local or conflict path (no reload)
+      showReport(stud,did);
+    });
+    // if publish succeeds, page reloads and shows report via nav-after; show a brief saving state now:
+    root.innerHTML='<div class="wrap"><div class="rep-hero"><div class="big">…</div><div class="lbl">зберігаємо результат</div></div></div>';
+  }
+  function showReport(studentId,dayId){
+    var d=null;DAYS.forEach(function(x){if(x.id===dayId)d=x;});var rep=(state.results[studentId]||{})[dayId];if(!d||!rep){renderHome();return;}
+    var tot=rep.total||0,pctv=tot?Math.round(rep.correct/tot*100):0,nq=rep.records.length;
+    var openTxt=rep.openCount?(' · +'+rep.openCount+' письмових на перевірку'):'';
+    var html='<div class="wrap"><div class="run-top"><button class="x" id="rx2">✕</button><div class="meta"><div class="t">'+studName(studentId)+' · '+d.title+'</div><div class="p">'+new Date(rep.completedAt).toLocaleString("uk-UA")+'</div></div></div>'+
+      '<div class="rep-hero"><div class="big">'+rep.correct+'/'+tot+'</div><div class="lbl">правильних'+(tot?' · '+pctv+'%':'')+openTxt+'</div>'+
+      '<div class="rep-stats"><div class="st"><b>'+fmtTime(rep.totalMs)+'</b>увесь урок</div><div class="st"><b>'+fmtShort(rep.totalMs/(nq||1))+'</b>у середньому/питання</div></div></div>';
+    html+='<div class="subj-tot">';["m","e","g","h"].forEach(function(k){var p=rep.perSub[k];if(!p.n&&!p.open)return;var sub=SUB[k];var line=(p.n?p.c+'/'+p.n+' правильно':'')+(p.open?((p.n?' · ':'')+p.open+' письм.'):'')+' · '+fmtTime(p.ms);html+='<div class="s '+sub[2]+'"><h4>'+sub[0]+'</h4><p>'+line+'</p></div>';});html+='</div>';
+    html+=qrows(rep);
+    html+='<div class="toolbar"><button class="bigbtn" id="done">Готово</button></div></div>';
+    root.innerHTML=html;
+    document.getElementById("rx2").onclick=function(){tab="lessons";renderHome();};
+    document.getElementById("done").onclick=function(){tab="lessons";renderHome();};
+  }
+  function suspicious(r){if(r.skipped||r.open)return r.pasted?true:false;if(r.pasted)return true;var ks=r.keystrokes||0;if((r.chars||0)>=8&&r.ms<1200&&ks<r.chars*0.4)return true;return false;}
+  function metaBadges(r){
+    if(r.skipped)return '<span class="pill">⏭ пропущено</span>';
+    var out='<span class="pill">⏱ '+fmtShort(r.ms)+'</span>';
+    out+=r.pasted?'<span class="pill badge-paste">📋 вставлено'+((r.pasteCount||0)>1?' ×'+r.pasteCount:'')+'</span>':'<span class="pill badge-in">⌨ вручну</span>';
+    if((r.edits||0)>0)out+='<span class="pill badge-edit">✎ '+r.edits+' прав.</span>';
+    if(suspicious(r))out+='<span class="pill badge-warn">⚠ перевір</span>';
+    return out;
+  }
+  function qrows(rep){
+    var html="";
+    rep.records.forEach(function(r){var sub=SUB[r.s];
+      var markCls=r.open?"open":(r.correct?"ok":"bad"),markCh=r.open?"✎":(r.correct?"✓":"✕");
+      html+='<div class="qrow"><div class="top2"><span class="mk '+markCls+'">'+markCh+'</span><span class="qn">'+r.q+'</span><span class="tag2 '+sub[1]+'">'+sub[0]+'</span></div>';
+      if(r.open){
+        html+=r.skipped?'<div class="ans-line"><span class="yn">Пропущено</span></div>':'<div class="openans">'+esc(r.given)+'</div>';
+      }else{
+        var given=r.skipped?'<span class="yn">пропущено</span>':'<span class="given '+(r.correct?"right":"wrong")+'">'+esc(r.given)+'</span>';
+        var corr=r.correct?'':' <span class="yn">· правильно:</span> <span class="correct-ans">'+esc(r.answer)+'</span>';
+        html+='<div class="ans-line"><span class="yn">Відповідь:</span> '+given+corr+'</div>';
+      }
+      html+='<div class="meta2">'+metaBadges(r)+'</div></div>';
+    });
+    return html;
+  }
+
+  /* ---------------- RESULTS (parent) ---------------- */
+  function renderResults(c){
+    if(!parentStudent)parentStudent=STUDENTS[0].id;
+    var chips=STUDENTS.map(function(s){var n=Object.keys(resultsOf(s.id)).length;return '<button class="tab'+(s.id===parentStudent?" sel":"")+'" data-ps="'+s.id+'">'+s.em+' '+s.name+' · '+n+'</button>';}).join("");
+    var syncNote=syncMode==="local"?'<div class="banner warn">Зараз немає звʼязку із сервером — показано збережені дані цього пристрою. Нові результати підтягнуться, щойно звʼязок відновиться.</div>':'';
+    c.innerHTML='<h2 class="vt">Результати</h2><p class="vsub">Звіти по кожному уроку: правильно/неправильно, час і як введено відповідь.</p>'+syncNote+
+      '<div class="tabs" style="margin-bottom:18px">'+chips+'</div><div id="stud-res"></div>'+parentTools();
+    c.querySelectorAll("[data-ps]").forEach(function(b){b.onclick=function(){parentStudent=b.dataset.ps;renderHome();};});
+    renderStudentRes(document.getElementById("stud-res"),parentStudent);
+    bindParentTools(c);
+  }
+  function renderStudentRes(box,sid){
+    var res=resultsOf(sid);
+    var done=DAYS.filter(function(d){return res[d.id];});
+    if(!done.length){box.innerHTML='<div class="empty">'+studName(sid)+' ще не пройшов(-ла) жодного уроку.</div>';return;}
+    var totC=0,totN=0,totMs=0,totPaste=0,totSusp=0;done.forEach(function(d){var r=res[d.id];totC+=r.correct;totN+=r.total;totMs+=r.totalMs;totPaste+=r.records.filter(function(x){return x.pasted;}).length;totSusp+=r.records.filter(suspicious).length;});
+    var html='<div class="jsum"><div class="b"><div class="n">'+done.length+'</div><div class="l">уроків пройдено</div></div>'+
+      '<div class="b"><div class="n">'+(totN?Math.round(totC/totN*100)+'%':'—')+'</div><div class="l">правильних ('+totC+'/'+totN+')</div></div>'+
+      '<div class="b"><div class="n">'+fmtTime(totMs)+'</div><div class="l">загальний час</div></div>'+
+      (totSusp?'<div class="b"><div class="n" style="color:var(--bad)">⚠ '+totSusp+'</div><div class="l">на перевірку</div></div>':'')+'</div>';
+    done.slice().reverse().forEach(function(d){var r=res[d.id];var pastes=r.records.filter(function(x){return x.pasted;}).length;var susp=r.records.filter(suspicious).length;
+      var sub2=new Date(r.completedAt).toLocaleDateString("uk-UA")+' · '+fmtTime(r.totalMs)+(pastes?' · 📋 '+pastes:'')+(susp?' · ⚠ '+susp:'')+(r.openCount?' · ✎ '+r.openCount:'');
+      html+='<div class="jitem" data-id="'+d.id+'"><div class="jhead"><div class="jn"><h4>'+d.title+'</h4><p>'+sub2+'</p></div><span class="sc">'+r.correct+'/'+r.total+'</span><span class="arr">▾</span></div><div class="jbody"></div></div>';
+    });
+    box.innerHTML=html;
+    box.querySelectorAll(".jitem").forEach(function(it){var head=it.querySelector(".jhead"),body=it.querySelector(".jbody"),id=it.dataset.id;
+      head.onclick=function(){var open=it.classList.toggle("open");if(open&&!body.dataset.f){body.innerHTML=journalDetail(res[id]);body.dataset.f="1";}};});
+  }
+  function parentTools(){return '<div class="toolbar"><button class="bigbtn" id="export" style="font-size:14px;padding:10px 16px">⬇ Експорт результатів</button><button class="reset" id="reset">Очистити всі результати</button></div><p class="note" style="margin-top:8px">'+(syncMode==="local"?"⚠ Офлайн — зміни збережуться локально й синхронізуються згодом.":"Оновлюється автоматично, коли учень завершує урок. «Експорт» — вивантажити результати файлом (напр., щоб надіслати Claude).")+'</p>';}
+  function bindParentTools(c){
+    var b=c.querySelector("#reset");if(b)b.onclick=function(){if(!confirm("Очистити всі результати? Це не можна відмінити."))return;state.results={};persist(null,function(){renderHome();});};
+    var e=c.querySelector("#export");if(e)e.onclick=exportData;
+  }
+  function exportData(){
+    var payload={exportedAt:new Date().toISOString(),students:{},results:state.results};
+    STUDENTS.forEach(function(x){payload.students[x.id]=x.name;});
+    var blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json"});
+    var url=URL.createObjectURL(blob);var a=document.createElement("a");a.href=url;a.download="navchalnyy-rezultaty.json";document.body.appendChild(a);a.click();a.remove();
+    setTimeout(function(){URL.revokeObjectURL(url);},1500);
+  }
+  function journalDetail(rep){
+    var html='<p class="flags-legend">⌨ вручну · 📋 вставлено (копіюванням) · ✎ N прав. — стільки разів стирав і міняв відповідь · ⚠ перевір — підозріло (вставлено або надто швидко) · ✎ синій — письмове завдання (перевірте текст)</p>';
+    ["m","e","g","h"].forEach(function(k){var p=rep.perSub[k];if(!p.n&&!p.open)return;var sub=SUB[k];var line=(p.n?p.c+'/'+p.n+' правильно':'')+(p.open?((p.n?' · ':'')+p.open+' письм.'):'');html+='<div class="qrow" style="box-shadow:none"><div class="top2"><span class="tag2 '+sub[1]+'">'+sub[0]+'</span><span class="qn" style="font-weight:600">'+line+'</span><span class="pill">⏱ '+fmtTime(p.ms)+'</span></div></div>';});
+    html+=qrows(rep);return html;
+  }
+
+  /* ---------------- PROGRAM / PLAN ---------------- */
+  function renderProgram(c){
+    var h='<h2 class="vt">Програма на півроку</h2><p class="vsub">Повний маршрут: 24 тижні, 6 модулів.</p>';
+    MODULES.forEach(function(m){var rows="";m.rows.forEach(function(r){rows+='<tr><th>'+r[0]+'</th><td>'+r[1]+'</td><td>'+r[2]+'</td><td>'+r[3]+'</td><td>'+r[4]+'</td></tr>';});
+      h+='<div class="mod"><div class="mod-head"><span class="mnum">'+m.n+'</span><h3>'+m.title+'</h3><span class="wk">Тижні '+m.wk[0]+'–'+m.wk[1]+'</span></div><div class="scroll"><table class="prog"><thead><tr><th>Тиж.</th><th class="cm">Математика</th><th class="ce2">Англійська</th><th class="cg2">Географія</th><th class="ch2">Історія</th></tr></thead><tbody>'+rows+'</tbody></table></div></div>';});
+    c.innerHTML=h;
+  }
+  function renderPlan(c){
+    c.innerHTML='<h2 class="vt">План дня</h2><p class="vsub">60 хвилин, чотири предмети по 15. Математика й англійська — щодня; географія й історія — через цікавість.</p>'+
+      '<div class="pcard p-m"><div class="ph"><h4>Математика</h4><span class="tm">15 хв</span></div><div class="pb2"><div class="pstep"><span class="tt">0–5 хв</span><span>Розминка: картки на таблицю множення.</span></div><div class="pstep"><span class="tt">5–15 хв</span><span>3–5 прикладів. Помилку розбираємо одразу.</span></div></div></div>'+
+      '<div class="pcard p-e"><div class="ph"><h4>Англійська</h4><span class="tm">15 хв</span></div><div class="pb2"><div class="pstep"><span class="tt">0–5 хв</span><span>5 нових слів однієї теми.</span></div><div class="pstep"><span class="tt">5–15 хв</span><span>Короткий текст і 2–3 свої речення.</span></div></div></div>'+
+      '<div class="pcard p-g"><div class="ph"><h4>Географія</h4><span class="tm">15 хв</span></div><div class="pb2"><div class="pstep"><span class="tt">0–15 хв</span><span>Карта: континент → країни → столиці → факт про природу.</span></div></div></div>'+
+      '<div class="pcard p-h"><div class="ph"><h4>Історія</h4><span class="tm">15 хв</span></div><div class="pb2"><div class="pstep"><span class="tt">0–15 хв</span><span>Історія → переказ своїми словами → місце на карті.</span></div></div></div>'+
+      '<footer>Це маршрут, а не жорсткий графік. Втомився — краще зупинитись раніше. Головне — щоденність.</footer>';
+  }
+
+  /* ---------------- INIT ---------------- */
+  renderRoot();
+  loadRemote(true);
+  setInterval(function(){if(!run)loadRemote(true);},15000);
+
+}
+appMain();
+</script>
+
+</body>
+</html>

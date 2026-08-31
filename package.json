@@ -1,0 +1,10 @@
+{
+  "name": "navchalnyy-tsentr",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Навчальний центр — денні уроки з перевіркою для двох учнів",
+  "dependencies": {
+    "@netlify/blobs": "^8.1.0"
+  }
+}
