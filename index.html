@@ -78,6 +78,12 @@ function appMain(){
   .c-m{background:var(--math-bg);color:var(--math);} .c-e{background:var(--eng-bg);color:var(--eng);} .c-g{background:var(--geo-bg);color:var(--geo);} .c-h{background:var(--hist-bg);color:var(--hist);}
   .qtext{font-family:Lora,serif;font-size:24px;font-weight:600;margin:0 0 6px;}
   .qhint{font-size:13px;color:var(--ink-faint);margin:0 0 18px;}
+  .theory-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:22px 20px;}
+  .theory-card h3{font-size:19px;font-weight:600;margin:6px 0 12px;}
+  .tchip{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:4px 10px;border-radius:6px;}
+  .theory-body{font-size:15.5px;color:var(--ink);line-height:1.65;}
+  .theory-body p{margin:10px 0;} .theory-body b{color:var(--ink);font-weight:700;}
+  .theory-body .ex{background:var(--surface-2);border-radius:9px;padding:9px 12px;margin:10px 0;font-size:14.5px;color:var(--ink-soft);}
   .ansrow{display:flex;gap:10px;flex-wrap:wrap;}
   .ansrow.col{flex-direction:column;align-items:stretch;}
   .ansrow input,.ansrow textarea{flex:1;min-width:160px;font-size:20px;padding:13px 15px;border-radius:12px;border:2px solid var(--line);background:var(--bg);color:var(--ink);font-family:inherit;}
@@ -154,7 +160,7 @@ function appMain(){
       {s:"m",t:"num",q:"6 × 7 = ?",a:42},{s:"m",t:"num",q:"8 × 9 = ?",a:72},
       {s:"e",t:"txt",q:"«мама» англійською?",a:["mother"]},{s:"e",t:"txt",q:"«брат» англійською?",a:["brother"]},
       {s:"g",t:"txt",q:"Яка сторона світу завжди зверху на карті?",a:["північ","пн"]},{s:"g",t:"txt",q:"Флора — це рослини чи тварини?",a:["рослини","рослина"]},
-      {s:"h",t:"txt",q:"З чого первісні люди робили знаряддя?",a:["камінь","каменю","з каменю","каміння"],hint:"одне слово"},{s:"h",t:"txt",q:"Що давало первісним людям тепло й захист?",a:["вогонь"]}]},
+      {s:"h",t:"txt",q:"З чого первісні люди робили знаряддя?",a:["камінь","каменю","з каменю","каміння","камень","камня"],hint:"одне слово"},{s:"h",t:"txt",q:"Що давало первісним людям тепло й захист?",a:["вогонь"]}]},
     {id:"d2",title:"День 2 — Множення та їжа",theme:"Множення, їжа, столиці, Єгипет",qs:[
       {s:"m",t:"num",q:"7 × 8 = ?",a:56},{s:"m",t:"num",q:"9 × 6 = ?",a:54},
       {s:"e",t:"txt",q:"«вода» англійською?",a:["water"]},{s:"e",t:"txt",q:"«хліб» англійською?",a:["bread"]},
@@ -197,6 +203,46 @@ function appMain(){
         {s:"h",t:"open",q:"Своїми словами: хто такі лицарі й навіщо будували замки?"}]
   };
   DAYS.forEach(function(d){var o=OPEN[d.id];if(o)d.qs=d.qs.concat(o);});
+  // Short theory shown before each subject's tasks (read → then do)
+  var THEORY={
+    d1:{
+      m:"<p><b>Множення</b> — це швидке додавання однакових чисел. 6 × 7 означає «взяти 6 сім разів»: 6+6+6+6+6+6+6 = 42.</p><p>Складні приклади варто вивчити напам'ять: <b>8 × 9 = 72</b>. Хитрість: 8×9 = 9×8, тож учити треба вдвічі менше.</p>",
+      e:"<p>Слова про сім'ю: <b>mother</b> [мазе] — мама, <b>father</b> [фазе] — тато, <b>brother</b> [бразе] — брат, <b>sister</b> [сісте] — сестра.</p><div class='ex'>Речення: <b>This is my mother.</b> (Це моя мама.) · <b>I have a brother.</b> (У мене є брат.)</div>",
+      g:"<p><b>Сторони світу:</b> на будь-якій карті <b>вгорі — північ</b>, внизу — південь, праворуч — схід, ліворуч — захід.</p><p><b>Флора</b> — це всі <b>рослини</b> місця, <b>фауна</b> — всі <b>тварини</b>.</p>",
+      h:"<p>Найдавніший час звуть <b>кам'яним віком</b> — знаряддя робили з <b>каменю</b>. Люди жили в печерах, полювали й збирали їжу.</p><p>Дуже важливим був <b>вогонь</b>: тепло, захист від звірів і готова їжа.</p>"
+    },
+    d2:{
+      m:"<p>Тренуємо складніші приклади: <b>7 × 8 = 56</b>, <b>9 × 6 = 54</b>. Множення можна перевертати: 9×6 = 6×9.</p>",
+      e:"<p>Їжа: <b>water</b> [воте] — вода, <b>bread</b> [бред] — хліб, <b>milk</b> [мілк] — молоко, <b>apple</b> [епл] — яблуко.</p><div class='ex'><b>I like apples.</b> (Я люблю яблука.) · <b>I want water.</b> (Я хочу води.)</div>",
+      g:"<p><b>Столиця України — Київ.</b> Найбільша гаряча пустеля світу — <b>Сахара</b> (в Африці): спека, мало води, живуть верблюди.</p>",
+      h:"<p>Уздовж річки <b>Ніл</b> виникла держава <b>Єгипет</b>. Ніл розливався й залишав родючий мул, тому в пустелі вирощували хліб.</p><p>Правитель — <b>фараон</b> (майже бог); для нього будували <b>піраміди</b>.</p>"
+    },
+    d3:{
+      m:"<p><b>Ділення</b> — обернене множення. Якщо 7 × 6 = 42, то <b>42 ÷ 6 = 7</b>. «42 поділити на 6» = на скільки помножити 6, щоб вийшло 42?</p>",
+      e:"<p>Дім: <b>house</b> [хаус] — будинок, <b>room</b> [рум] — кімната, <b>window</b> [віндоу] — вікно, <b>door</b> [дор] — двері.</p><div class='ex'><b>My room is small.</b> (Моя кімната маленька.)</div>",
+      g:"<p>Столиці Європи: <b>Франція — Париж</b>, <b>Німеччина — Берлін</b>, Італія — Рим, Іспанія — Мадрид.</p>",
+      h:"<p>Для померлих фараонів будували величезні гробниці — <b>піраміди</b>. Писали єгиптяни особливими малюнками — <b>ієрогліфами</b>.</p>"
+    },
+    d4:{
+      m:"<p><b>Порядок дій:</b> спочатку дужки ( ), потім × і ÷, наприкінці + і −.</p><div class='ex'>2 + 3 × 4 = 2 + 12 = <b>14</b> (спершу множення!). А (2 + 3) × 4 = <b>20</b>.</div>",
+      e:"<p>Погода: <b>sun</b> [сан] — сонце, <b>rain</b> [рейн] — дощ, <b>snow</b> [сноу] — сніг, <b>cold</b> [колд] — холодно.</p><div class='ex'><b>It is cold today.</b> (Сьогодні холодно.)</div>",
+      g:"<p>Столиці Південної Європи (біля теплого моря): <b>Італія — Рим</b>, <b>Іспанія — Мадрид</b>.</p>",
+      h:"<p>У <b>Стародавній Греції</b> (місто <b>Афіни</b>) народилася <b>демократія</b> — коли рішення приймають самі громадяни голосуванням. Мудреців звали <b>філософами</b>.</p>"
+    },
+    d5:{
+      m:"<p><b>Дріб</b> — частина цілого. Піцу поділили на 4: один шматок — ¼, два — ½, три — ¾.</p><p>Порядок дій: 20 − 12 ÷ 4 = 20 − 3 = <b>17</b>.</p>",
+      e:"<p><b>Множина:</b> зазвичай додаємо <b>-s</b> (cat → cats). Після s, x, ch, sh — <b>-es</b> (box → box<b>es</b>). Винятки: child → <b>children</b>.</p>",
+      g:"<p>Столиці Азії: <b>Китай — Пекін</b>, <b>Японія — Токіо</b>, Індія — Нью-Делі.</p>",
+      h:"<p>Місто <b>Рим</b> стало великою імперією. Її сила — армія воїнів-<b>легіонерів</b>. Мова римлян — <b>латина</b>.</p>"
+    },
+    d6:{
+      m:"<p>Повторення: <b>9 × 7 = 63</b>, <b>64 ÷ 8 = 8</b>. Множення й ділення — брати: 8 × 8 = 64, тож 64 ÷ 8 = 8.</p>",
+      e:"<p><b>this</b> — цей (близько), <b>these</b> — ці (багато, близько), <b>that</b> — той (далеко), <b>those</b> — ті.</p><div class='ex'><b>This is my dog.</b> · <b>These are my books.</b></div>",
+      g:"<p><b>Єгипет — столиця Каїр.</b> У <b>савані</b> (трави й поодинокі дерева) живуть леви, жирафи, слони.</p>",
+      h:"<p>Після Риму настали <b>Середні віки</b>. Головні воїни — <b>лицарі</b> (вершники в обладунках); для захисту будували кам'яні <b>замки</b>.</p>"
+    }
+  };
+  DAYS.forEach(function(d){if(THEORY[d.id])d.theory=THEORY[d.id];});
   var MODULES=[
     {n:1,title:"Фундамент",wk:[1,4],rows:[[1,"Множення ×2–×5","Алфавіт; Family","Що таке географія; карта","Стрічка часу"],[2,"Множення ×6–×12","to be; Food","Материки й океани","Первісні люди"],[3,"Ділення","this/that; Home","Сторони світу","Кам’яний вік"],[4,"Порядок дій","Weather","Флора/фауна; зони","Перші землероби"]]},
     {n:2,title:"Дроби та Стародавній Схід",wk:[5,8],rows:[[5,"Дроби: поняття","Present Simple","Європа: огляд","Єгипет: Ніл"],[6,"Скорочення дробів","3-тя особа; School","Україна + сусіди","Єгипет: піраміди"],[7,"Додавання дробів","Числа, час","Зах. Європа","Месопотамія"],[8,"Різні знаменники","Body/Clothes","Пд. Європа","Індія та Китай"]]},
@@ -222,8 +268,20 @@ function appMain(){
   var dev={};try{dev=JSON.parse(localStorage.getItem(LS_DEV))||{};}catch(e){}
   function saveDev(){try{localStorage.setItem(LS_DEV,JSON.stringify(dev));}catch(e){}}
 
-  function norm(x){return String(x).toLowerCase().trim().replace(/['’.!]/g,"").replace(/\s+/g," ").replace(/ё/g,"е");}
-  function isCorrect(qq,val){if(val==null||val==="")return false;if(qq.t==="num"){var n=parseFloat(String(val).replace(",","."));return !isNaN(n)&&n===qq.a;}var v=norm(val);return qq.a.some(function(a){return norm(a)===v;});}
+  function norm(x){return String(x).toLowerCase().trim().replace(/['’‘`.!,]/g,"").replace(/\s+/g," ").replace(/ё/g,"е");}
+  // "loose" = tolerant of и/і/ї spelling, ґ→г, soft sign — so Ukrainian-spelling slips don't fail a correct answer.
+  function loose(x){return norm(x).replace(/[иіїй]/g,"i").replace(/ґ/g,"г").replace(/ь/g,"");}
+  function isCorrect(qq,val){
+    if(val==null||val==="")return false;
+    if(qq.t==="num"){var n=parseFloat(String(val).replace(",","."));return !isNaN(n)&&n===qq.a;}
+    var v=norm(val),lv=loose(val),toks=lv.split(" ");
+    return qq.a.some(function(a){
+      var na=norm(a),la=loose(a);
+      if(na===v||la===lv)return true;          // exact / spelling-tolerant match
+      if(toks.indexOf(la)>=0)return true;       // correct word inside a longer answer ("вогонь та печері")
+      return false;
+    });
+  }
   function fmtTime(ms){var s=Math.round(ms/1000);if(s<60)return s+" с";return Math.floor(s/60)+" хв "+(s%60)+" с";}
   function fmtShort(ms){var s=Math.round(ms/1000);if(s<60)return s+"с";return Math.floor(s/60)+"хв "+(s%60)+"с";}
   function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];});}
@@ -326,21 +384,37 @@ function appMain(){
     DAYS.forEach(function(d,i){var r=resS[d.id];
       var btn=document.createElement("button");btn.className="day";
       var badge=r?'<span class="badge done">'+r.correct+'/'+r.total+' ✓</span>':'<span class="badge">Почати</span>';
-      btn.innerHTML='<span class="dn">'+(i+1)+'</span><span class="dt"><h3>'+d.title+'</h3><p>'+d.theme+' · '+d.qs.length+' питань</p></span>'+badge;
+      btn.innerHTML='<span class="dn">'+(i+1)+'</span><span class="dt"><h3>'+d.title+'</h3><p>теорія + '+d.qs.length+' завдань</p></span>'+badge;
       btn.onclick=function(){startDay(d);};box.appendChild(btn);
     });
   }
-  function startDay(d){run={day:d,idx:0,records:[],startAt:Date.now()};timerInt=setInterval(updTimer,1000);renderQ();}
+  function buildSteps(d){
+    var order=["m","e","g","h"],byS={m:[],e:[],g:[],h:[]},steps=[];
+    d.qs.forEach(function(q){byS[q.s].push(q);});
+    order.forEach(function(s){if(byS[s].length){if(d.theory&&d.theory[s])steps.push({theory:true,s:s});byS[s].forEach(function(q){steps.push({q:q});});}});
+    return steps;
+  }
+  function startDay(d){run={day:d,steps:buildSteps(d),si:0,records:[],startAt:Date.now()};run.nq=run.steps.filter(function(x){return x.q;}).length;timerInt=setInterval(updTimer,1000);renderStep();}
   function exitRunner(){if(timerInt){clearInterval(timerInt);timerInt=null;}run=null;renderHome();}
   function updTimer(){var t=root.querySelector(".timer");if(t&&run)t.textContent=fmtShort(Date.now()-run.startAt);}
-  function renderQ(){
-    var d=run.day,i=run.idx,qq=d.qs[i],sub=SUB[qq.s],open=qq.t==="open";
+  function renderStep(){var st=run.steps[run.si];if(!st){finishDay();return;}if(st.theory)renderTheory(st);else renderQ(st);}
+  function runTop(sub2){return '<div class="run-top"><button class="x" id="rx">✕</button><div class="meta"><div class="t">'+run.day.title+'</div><div class="p">'+sub2+'</div></div><div class="timer">'+fmtShort(Date.now()-run.startAt)+'</div></div><div class="pbar"><div class="f" style="width:'+(run.si/run.steps.length*100)+'%"></div></div>';}
+  function bindExit(){document.getElementById("rx").onclick=function(){if(confirm("Вийти з уроку? Прогрес цього уроку не збережеться."))exitRunner();};}
+  function renderTheory(st){
+    var sub=SUB[st.s];
+    root.innerHTML='<div class="wrap">'+runTop("Теорія: "+sub[0])+
+      '<div class="theory-card"><span class="tchip '+sub[1]+'">'+sub[0]+' · теорія</span><h3>Спочатку прочитай</h3><div class="theory-body">'+run.day.theory[st.s]+'</div>'+
+      '<button class="bigbtn" id="next" style="margin-top:16px">Зрозуміло, далі →</button></div></div>';
+    bindExit();
+    document.getElementById("next").onclick=function(){run.si++;renderStep();};
+  }
+  function renderQ(st){
+    var qq=st.q,sub=SUB[qq.s],open=qq.t==="open";
+    var qn=0;for(var k=0;k<=run.si;k++){if(run.steps[k].q)qn++;}
     var field=open
       ? '<textarea id="ans" rows="3" autocomplete="off" placeholder="Напиши свою відповідь..."></textarea>'
       : '<input id="ans" type="text" '+(qq.t==="num"?'inputmode="numeric"':'')+' autocomplete="off" autocapitalize="off" placeholder="Твоя відповідь">';
-    root.innerHTML='<div class="wrap">'+
-      '<div class="run-top"><button class="x" id="rx">✕</button><div class="meta"><div class="t">'+d.title+'</div><div class="p">Питання '+(i+1)+' з '+d.qs.length+(open?' · письмове завдання':'')+'</div></div><div class="timer">'+fmtShort(Date.now()-run.startAt)+'</div></div>'+
-      '<div class="pbar"><div class="f" style="width:'+(i/d.qs.length*100)+'%"></div></div>'+
+    root.innerHTML='<div class="wrap">'+runTop("Питання "+qn+" з "+run.nq+(open?" · письмове завдання":""))+
       '<div class="qcard"><span class="qchip '+sub[1]+'">'+sub[0]+(open?' · пиши сам(а)':'')+'</span><p class="qtext">'+qq.q+'</p>'+(qq.hint?'<p class="qhint">Підказка: '+qq.hint+'</p>':'')+
       '<div class="ansrow'+(open?' col':'')+'">'+field+'<button class="bigbtn" id="submit" disabled>'+(open?'Готово':'Відповісти')+'</button></div>'+
       '<button class="skip" id="skip">Не знаю — пропустити</button></div></div>';
@@ -358,7 +432,7 @@ function appMain(){
     if(!open)inp.addEventListener("keydown",function(e){if(e.key==="Enter"&&!btn.disabled)commit();});
     btn.onclick=function(){commit();};
     document.getElementById("skip").onclick=function(){commit(true);};
-    document.getElementById("rx").onclick=function(){if(confirm("Вийти з уроку? Прогрес цього уроку не збережеться."))exitRunner();};
+    bindExit();
     setTimeout(function(){inp.focus();},50);
     function commit(skip){
       var val=skip?"":inp.value.trim();
@@ -367,7 +441,7 @@ function appMain(){
         correct:(open?null:isCorrect(qq,val)),
         answer:open?"":(qq.t==="num"?String(qq.a):qq.a[0]),
         ms:now-qStart,pasted:pasted&&!skip,pasteCount:skip?0:pasteCount,edits:skip?0:edits,keystrokes:skip?0:keystrokes,chars:val.length,skipped:!!skip});
-      run.idx++;if(run.idx>=d.qs.length)finishDay();else renderQ();
+      run.si++;renderStep();
     }
   }
   function finishDay(){
