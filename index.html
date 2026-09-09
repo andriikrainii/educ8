@@ -163,7 +163,7 @@ function appMain(){
   function studName(id){var f=STUDENTS.filter(function(s){return s.id===id;})[0];return f?f.name:"Учень";}
   function resultsOf(id){if(!state.results[id])state.results[id]={};return state.results[id];}
   // Розклад: 1 урок на день, щодня. Урок 1 = SCHED_START; Урок N = +(N-1) днів.
-  var SCHED_START="2026-09-03";
+  var SCHED_START="2026-08-31";
   var UAMON=["січ","лют","бер","кві","тра","чер","лип","сер","вер","жов","лис","гру"];
   function pad2(n){return (n<10?"0":"")+n;}
   function lessonDate(i){var d=new Date(SCHED_START+"T00:00:00");d.setDate(d.getDate()+i);return d;}
